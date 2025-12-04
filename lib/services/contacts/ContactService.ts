@@ -1,6 +1,6 @@
 import { logger } from "@/lib/logger"
 import { BaseService } from "../base/BaseService"
-import type { Contact, CreateContactInput, UpdateContactInput } from "@/types/contact/contact.types"
+import type { Contact, CreateContactInput, UpdateContactInput } from "@/types/contact"
 
 export class ContactService extends BaseService<Contact, CreateContactInput, UpdateContactInput> {
   protected getBasePath(): string {

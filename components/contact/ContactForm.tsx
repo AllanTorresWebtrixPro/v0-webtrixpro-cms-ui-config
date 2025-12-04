@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useContacts } from "@/hooks/use-contacts"
-import { createContactSchema, type CreateContactInput } from "@/types/contact/contact.types"
+import { createContactSchema, type CreateContactInput } from "@/types/contact"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"

@@ -1,19 +1,26 @@
-import { BaseService } from "../base/BaseService"
+import { logger } from "@/lib/logger"
+import { customFetch } from "@/lib/custom-fetch"
 import type { Service, ServiceDetail } from "@/types/service/service.types"
 
-class ServiceService extends BaseService {
-  constructor() {
-    super("Service")
-  }
-
+class ServiceService {
   async getAllServices(): Promise<Service[]> {
-    this.logger.info("Fetching all services")
-    return this.get<Service[]>("/api/v1/services")
+    logger.debug("[ServiceService] Fetching all services")
+    try {
+      return await customFetch<Service[]>("/api/v1/services")
+    } catch (error) {
+      logger.error("[ServiceService] Error fetching all services:", error)
+      throw error
+    }
   }
 
   async getServiceBySlug(slug: string): Promise<ServiceDetail> {
-    this.logger.info("Fetching service by slug", { slug })
-    return this.get<ServiceDetail>(`/api/v1/services/${slug}`)
+    logger.debug("[ServiceService] Fetching service by slug:", slug)
+    try {
+      return await customFetch<ServiceDetail>(`/api/v1/services/${slug}`)
+    } catch (error) {
+      logger.error("[ServiceService] Error fetching service by slug:", error)
+      throw error
+    }
   }
 }
 

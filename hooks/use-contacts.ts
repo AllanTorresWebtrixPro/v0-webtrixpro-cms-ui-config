@@ -2,9 +2,9 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useGlobalErrorHandler } from "./use-global-error-handler"
-import { contactService } from "@/lib/services"
 import { queryKeys } from "@/lib/query-keys"
-import type { CreateContactInput, UpdateContactInput } from "@/types/contact/contact.types"
+import { customFetch } from "@/lib/custom-fetch"
+import type { CreateContactInput, UpdateContactInput, Contact } from "@/types/contact"
 
 export function useContacts() {
   const { handleFetchError, handleCrudError, handleCrudSuccess } = useGlobalErrorHandler()
@@ -14,7 +14,7 @@ export function useContacts() {
     queryKey: queryKeys.contacts.list(),
     queryFn: async () => {
       try {
-        return await contactService.list()
+        return await customFetch<Contact[]>("/api/v1/contacts")
       } catch (error) {
         handleFetchError(error, "contacts")
         throw error
@@ -25,7 +25,10 @@ export function useContacts() {
   const createMutation = useMutation({
     mutationFn: async (data: CreateContactInput) => {
       try {
-        const result = await contactService.create(data)
+        const result = await customFetch<Contact>("/api/v1/contacts", {
+          method: "POST",
+          body: JSON.stringify(data),
+        })
         handleCrudSuccess("create", "contact", `${data.firstName} ${data.lastName}`)
         return result
       } catch (error) {
@@ -41,7 +44,10 @@ export function useContacts() {
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateContactInput }) => {
       try {
-        const result = await contactService.update(id, data)
+        const result = await customFetch<Contact>(`/api/v1/contacts/${id}`, {
+          method: "PUT",
+          body: JSON.stringify(data),
+        })
         handleCrudSuccess("update", "contact", result.id)
         return result
       } catch (error) {
@@ -58,7 +64,9 @@ export function useContacts() {
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       try {
-        await contactService.delete(id)
+        await customFetch(`/api/v1/contacts/${id}`, {
+          method: "DELETE",
+        })
         handleCrudSuccess("delete", "contact", id)
       } catch (error) {
         handleCrudError(error, "delete", "contact", id)
@@ -85,7 +93,7 @@ export function useContact(id: string) {
     queryKey: queryKeys.contacts.detail(id),
     queryFn: async () => {
       try {
-        return await contactService.get(id)
+        return await customFetch<Contact>(`/api/v1/contacts/${id}`)
       } catch (error) {
         handleFetchError(error, "contact")
         throw error
